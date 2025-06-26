@@ -7,18 +7,14 @@ import type { ImageProps } from 'next/image';
 type NextImageProps = {
   alt: string;
   width?: string | number;
+  height?: string | number;
   children?: ReactNode;
   useSkeleton?: boolean;
   imgClassName?: string;
   previewCount?: number;
   blurClassName?: string;
-} & ImageProps;
+} & Omit<ImageProps, 'alt' | 'width' | 'height'>;
 
-/**
- *
- * @description Must set width and height, if not add layout='fill'
- * @param useSkeleton add background with pulse animation, don't use it if image is transparent
- */
 export function NextImage({
   src,
   alt,
@@ -36,6 +32,11 @@ export function NextImage({
 
   const handleLoad = (): void => setLoading(false);
 
+  // Convert string width/height to number
+  const numericWidth = typeof width === 'string' ? parseInt(width, 10) : width;
+  const numericHeight =
+    typeof height === 'string' ? parseInt(height, 10) : height;
+
   return (
     <figure style={{ width }} className={className}>
       <Image
@@ -45,12 +46,12 @@ export function NextImage({
             ? blurClassName ??
                 'animate-pulse bg-light-secondary dark:bg-dark-secondary'
             : previewCount === 1
-            ? '!h-auto !min-h-0 !w-auto !min-w-0 rounded-lg object-contain'
+            ? '!relative !h-auto !min-h-0'
             : 'object-cover'
         )}
         src={src}
-        width={width}
-        height={height}
+        width={numericWidth}
+        height={numericHeight}
         alt={alt}
         onLoadingComplete={handleLoad}
         layout='responsive'
