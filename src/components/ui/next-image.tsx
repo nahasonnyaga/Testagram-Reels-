@@ -6,8 +6,8 @@ import type { ImageProps } from 'next/image';
 
 type NextImageProps = {
   alt: string;
-  width?: string | number;
-  height?: string | number;
+  width?: number; // string removed
+  height?: number;
   children?: ReactNode;
   useSkeleton?: boolean;
   imgClassName?: string;
@@ -28,14 +28,11 @@ export function NextImage({
   blurClassName,
   ...rest
 }: NextImageProps): JSX.Element {
-  const [loading, setLoading] = useState(!!useSkeleton);
+  const [loading, setLoading] = useState<boolean>(!!useSkeleton);
 
-  const handleLoad = (): void => setLoading(false);
-
-  // Convert string width/height to number
-  const numericWidth = typeof width === 'string' ? parseInt(width, 10) : width;
-  const numericHeight =
-    typeof height === 'string' ? parseInt(height, 10) : height;
+  const handleLoad = (): void => {
+    setLoading(false);
+  };
 
   return (
     <figure style={{ width }} className={className}>
@@ -49,9 +46,9 @@ export function NextImage({
             ? '!relative !h-auto !min-h-0'
             : 'object-cover'
         )}
-        src={src}
-        width={numericWidth}
-        height={numericHeight}
+        src={src as string}
+        width={width}
+        height={height}
         alt={alt}
         onLoadingComplete={handleLoad}
         layout='responsive'
